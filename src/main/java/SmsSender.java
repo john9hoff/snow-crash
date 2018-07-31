@@ -15,8 +15,8 @@ public class SmsSender {
 
         Message message = Message
                 .creator(new PhoneNumber("+19257862700"), // to
-                        new PhoneNumber("+"), // from
-                        "Where's Wallace?")
+                        new PhoneNumber("+16503341051"), // from
+                        "Test Text: Your access code is wombat")
                 .create();
 
         System.out.println(message.getSid());
