@@ -6,16 +6,16 @@ import com.twilio.type.PhoneNumber;
 public class SmsSender {
     // Find your Account Sid and Auth Token at twilio.com/console
     public static final String ACCOUNT_SID =
-            "AC1c40a84078610f7edf7ee185c9cdf881";
+            "AC4c726d0ba0e16d5121d2f55e073acb5e";
     public static final String AUTH_TOKEN =
-            "d239c178cade34f1a9217d93f79ab307";
+            "61db361d0f0e58b2674050d8686a01b7";
 
     public static void main(String[] args) {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
         Message message = Message
-                .creator(new PhoneNumber("+13202952616"), // to
-                        new PhoneNumber("+13205230127"), // from
+                .creator(new PhoneNumber("+19257862700"), // to
+                        new PhoneNumber("+16503341051"), // from
                         "Test Text: Your access code is wombat")
                 .create();
 
