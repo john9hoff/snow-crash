@@ -10,6 +10,9 @@ public class SmsApp {
 
         post("/sms", (req, res) -> {
             res.type("application/xml");
+
+            String parsed = parse(req.body());
+
             Body body = new Body
                     .Builder("The Robots are coming! Head for the hills!")
                     .build();
@@ -23,5 +26,12 @@ public class SmsApp {
                     .build();
             return twiml.toXml();
         });
+    }
+
+    private static String parse(String unparsed){
+        String parsed = unparsed.substring(unparsed.indexOf("Body=") + 5, unparsed.indexOf("&FromCountry"));
+        parsed = parsed.replace('+',' ');
+        parsed = parsed.replace("%2B","+");
+        return parsed;
     }
 }
