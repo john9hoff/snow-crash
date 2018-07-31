@@ -10,15 +10,23 @@ public class SmsSender {
     public static final String AUTH_TOKEN =
             "61db361d0f0e58b2674050d8686a01b7";
 
+    public void sendMessage(String outgoing){
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+
+        Message message = Message
+                .creator(new PhoneNumber("+19257862700"), // to
+                        new PhoneNumber("+16503341051"), // from
+                        outgoing)
+                .create();
+    }
+
     public static void main(String[] args) {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
         Message message = Message
                 .creator(new PhoneNumber("+19257862700"), // to
                         new PhoneNumber("+16503341051"), // from
-                        "Test Text: Your access code is wombat")
+                        "Test Text: Your access code is mule")
                 .create();
-
-        System.out.println(message.getSid());
     }
 }
