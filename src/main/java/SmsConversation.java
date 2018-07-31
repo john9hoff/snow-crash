@@ -1,38 +1,81 @@
-import spark.Response;
+import com.twilio.twiml.MessagingResponse;
+import com.twilio.twiml.messaging.Body;
+import com.twilio.twiml.messaging.Message;
+
+import java.util.HashMap;
 
 public class SmsConversation {
     SmsSender smsSender;
+    String nextFunctionCall, userResponse, functionResponse;
+    HashMap<String,Runnable> functions;
 
     public SmsConversation(){
         smsSender = new SmsSender();
-    }
+        confirmDrugs();
+        nextFunctionCall = "confirmDrugs";
 
-    public void advance(Response request){
-        String parsedRequest = parse(request.body());
-    }
+        functions = new HashMap<>();
+        functions.put("confirmDrugs", () -> confirmDrugs());
+        functions.put("processConfirmDrugResponse",() -> processConfirmDrugResponse());
+        functions.put("confirmDrugsNo", () -> confirmDrugsNo());
+        functions.put("consentToReminders", () -> consentToReminders());
+        functions.put("queryReminderTime", () -> queryReminderTime());
+        functions.put("reminder", () -> remind());
+        sendResponse("Hey there");
 
+    }
 
 
     private void confirmDrugs(){
-        sendResponse("Have you recieved drugs?");
-        String response =
+        functionResponse = "Have you recieved drugs?";
+    }
+
+    private void processConfirmDrugResponse(){
+    }
+
+    private void confirmDrugsNo(){
+        sendResponse("Why not?");
     }
     private void consentToReminders(){}
-    private void querryReminderTime(){}
+    private void queryReminderTime(){}
     private void remind(){}
 
+    public MessagingResponse handleRequest(String message){
+        String parsed = parse(message);
+        userResponse = parsed;
 
-    public void sendResponse(String responceText){
+        System.out.println(userResponse);
+
+        functions.get("confirmDrugs");
+
+        return sendResponse(functionResponse);
+
+
+
 
     }
 
-    public String handleRes
+    public MessagingResponse sendResponse(String responseText){
+        Body body = new Body
+                .Builder(responseText)
+                .build();
+        Message sms = new Message
+                .Builder()
+                .body(body)
+                .build();
+        MessagingResponse twiml = new MessagingResponse
+                .Builder()
+                .message(sms)
+                .build();
+        return twiml;
+    }
 
 
 
 
 
-    private String parse(String unparsed){
+
+    public String parse(String unparsed){
         String parsed = unparsed.substring(unparsed.indexOf("Body=") + 5, unparsed.indexOf("&FromCountry"));
         parsed = parsed.replace('+',' ');
         parsed = parsed.replace("%2B","+");
