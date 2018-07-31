@@ -8,5 +8,10 @@
     <artifactId>snow-crash</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <dependencies><dependency>
+        <groupId>com.twilio.sdk</groupId>
+        <artifactId>twilio</artifactId>
+        <version>7.17.0</version>
+    </dependency></dependencies>
 
 </project>
