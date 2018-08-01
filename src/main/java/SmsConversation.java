@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class SmsConversation {
+    String username = "Karen";
     SmsSender smsSender;
     String nextFunctionCall, userResponse, functionResponse;
     HashMap<String,Runnable> functions;
@@ -25,7 +26,7 @@ public class SmsConversation {
         functions.put("queryReminderTime", () -> queryReminderTime());
         functions.put("reminder", () -> remind());
 
-        smsSender.sendMessage("Hey there");
+        smsSender.sendMessage("Hi " + username + "!");
         confirmDrugs();
     }
 
