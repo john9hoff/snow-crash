@@ -6,16 +6,16 @@ import com.twilio.type.PhoneNumber;
 public class SmsSender {
     // Find your Account Sid and Auth Token at twilio.com/console
     public static final String ACCOUNT_SID =
-            "AC4c726d0ba0e16d5121d2f55e073acb5e";
+            "ACe36aede20fcaa84b22f9df555606e07f";
     public static final String AUTH_TOKEN =
-            "61db361d0f0e58b2674050d8686a01b7";
+            "8ceb2a17002627dfc6d57ad194c72492";
 
     public void sendMessage(String outgoing){
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
         Message message = Message
-                .creator(new PhoneNumber("+19257862700"), // to
-                        new PhoneNumber("+16503341051"), // from
+                .creator(new PhoneNumber("+17632227520"), // to
+                        new PhoneNumber("+17639511646"), // from
                         outgoing)
                 .create();
     }
@@ -24,9 +24,9 @@ public class SmsSender {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
         Message message = Message
-                .creator(new PhoneNumber("+19257862700"), // to
-                        new PhoneNumber("+16503341051"), // from
-                        "Test Text: Your access code is mule")
+                .creator(new PhoneNumber("+17632227520"), // to
+                        new PhoneNumber("+17639511646"), // from
+                        "Happy cool things")
                 .create();
     }
 }

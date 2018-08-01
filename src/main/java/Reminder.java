@@ -27,7 +27,12 @@ public class Reminder {
                 result += String.valueOf(hour) + ":";
             }
             else{
-                result += String.valueOf(hour - 12) + ":";
+                if(hour == 12) {
+                    result += String.valueOf(hour) + ":";
+                }
+                else{
+                    result += String.valueOf(hour - 12) + ":";
+                }
             }
         }
         if(min < 10){

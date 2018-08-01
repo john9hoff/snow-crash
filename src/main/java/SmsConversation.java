@@ -49,7 +49,7 @@ public class SmsConversation {
         }
         else{
             functionResponse = "Please enter either y or n";
-            nextFunctionCall = "confirmDrugs;"
+            nextFunctionCall = "confirmDrugs";
         }
     }
     private void consentToReminders(){
@@ -63,9 +63,9 @@ public class SmsConversation {
                     "Or type \"Schedule\" to see your current medication schedule";
             nextFunctionCall = "queryReminderTime";
         }
-        else if userResponse.toUpperCase().equals("N"){
+        else if(userResponse.toUpperCase().equals("N")){
             functionResponse = "Ok.  If you have any questions, dial (555) 555-5551 to speak with a Pharmacist" +
-            "\nTo request a prescription refill type \"Refill\"";
+                    "\nTo request a prescription refill type \"Refill\"";
         } else{
             functionResponse = "Please enter y or n";
             nextFunctionCall = "consentToReminders";
@@ -104,7 +104,7 @@ public class SmsConversation {
                 }
             }
             functionResponse += "\n" + "Please enter the time you would like to be reminded.  Examples: 9 AM, 8:45 PM \n" +
-            "Or type \"Schedule\" to see your current medication schedule";
+                    "Or type \"Schedule\" to see your current medication schedule";
         }
     }
     private void remind(){
@@ -170,7 +170,7 @@ public class SmsConversation {
     }
 
     private void mock(){
-        Reminder r1 = new Reminder("2 capsules","Amazonalto", 9, 30);
+        Reminder r1 = new Reminder("2 capsules","Amazonalto", 9, 45);
         addToSchedule("9:30",r1);
         Reminder r2 = new Reminder("5 grams", "IBMTren", 12,30);
         addToSchedule("12:30",r2);
