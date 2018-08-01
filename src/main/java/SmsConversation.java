@@ -1,7 +1,9 @@
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Body;
 import com.twilio.twiml.messaging.Message;
+import com.wanasit.chrono.Chrono;
 
+import java.util.Date;
 import java.util.HashMap;
 
 public class SmsConversation {
@@ -11,48 +13,65 @@ public class SmsConversation {
 
     public SmsConversation(){
         smsSender = new SmsSender();
-        confirmDrugs();
         nextFunctionCall = "confirmDrugs";
 
         functions = new HashMap<>();
         functions.put("confirmDrugs", () -> confirmDrugs());
         functions.put("processConfirmDrugResponse",() -> processConfirmDrugResponse());
-        functions.put("confirmDrugsNo", () -> confirmDrugsNo());
         functions.put("consentToReminders", () -> consentToReminders());
+        functions.put("processConsentToReminders", () -> processConsentToReminders());
         functions.put("queryReminderTime", () -> queryReminderTime());
         functions.put("reminder", () -> remind());
-        sendResponse("Hey there");
 
+        smsSender.sendMessage("Hey there");
+        confirmDrugs();
     }
 
-
     private void confirmDrugs(){
-        functionResponse = "Have you recieved drugs?";
+        smsSender.sendMessage("Have you received your prescription?");
+        nextFunctionCall = "processConfirmDrugResponse";
     }
 
     private void processConfirmDrugResponse(){
+        if(userResponse.equals("y")){
+            smsSender.sendMessage("Excellent!");
+            consentToReminders();
+        }
+        else{
+            functionResponse = "Why not?";
+            nextFunctionCall = "confirmDrugs";
+        }
+    }
+    private void consentToReminders(){
+        functionResponse = "Would you like to use the SMS perscription reminder system?";
+        nextFunctionCall = "processConsentToReminders";
     }
 
-    private void confirmDrugsNo(){
-        sendResponse("Why not?");
+    private void processConsentToReminders(){
+        if(userResponse.equals("y")){
+            functionResponse = "Ok.  Please enter the time you would like to be reminded.  Examples: 9 AM, 8:45 PM";
+            nextFunctionCall = "queryReminderTime";
+        }
+        else{
+            functionResponse = "Ok.  If you have any questions, dial (555) 555-5551 to speak with a Pharmacist";
+        }
     }
-    private void consentToReminders(){}
-    private void queryReminderTime(){}
+    private void queryReminderTime(){
+        System.out.println("User Response: " + userResponse);
+        Date result = Chrono.ParseDate(userResponse);
+        System.out.println(result);
+        System.out.println(result.getHours() + " " + result.getMinutes());
+
+    }
     private void remind(){}
 
     public MessagingResponse handleRequest(String message){
-        String parsed = parse(message);
+        String parsed = parseSMS(message);
         userResponse = parsed;
 
-        System.out.println(userResponse);
-
-        functions.get("confirmDrugs");
+        functions.get(nextFunctionCall).run();
 
         return sendResponse(functionResponse);
-
-
-
-
     }
 
     public MessagingResponse sendResponse(String responseText){
@@ -70,15 +89,11 @@ public class SmsConversation {
         return twiml;
     }
 
-
-
-
-
-
-    public String parse(String unparsed){
+    public String parseSMS(String unparsed){
         String parsed = unparsed.substring(unparsed.indexOf("Body=") + 5, unparsed.indexOf("&FromCountry"));
         parsed = parsed.replace('+',' ');
         parsed = parsed.replace("%2B","+");
+        parsed = parsed.replace("%3A", ":");
         return parsed;
     }
 }

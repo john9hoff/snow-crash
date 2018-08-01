@@ -9,7 +9,6 @@ public class SmsApp {
     public static void main(String[] args) {
         SmsConversation convo = new SmsConversation();
 
-
         post("/sms", (req, res) -> {
             res.type("application/xml");
 
