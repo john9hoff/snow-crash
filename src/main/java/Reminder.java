@@ -3,12 +3,14 @@ public class Reminder {
     String medicationName;
     int hour;
     int min;
+    String instructions;
 
-    Reminder(String dose, String medicationName, int hour, int min){
+    Reminder(String dose, String medicationName, int hour, int min, String instructions){
         this.dose = dose;
         this.medicationName = medicationName;
         this.hour = hour;
         this.min = min;
+        this.instructions = instructions;
     }
 
     public void setTime(int hour, int min){
@@ -48,5 +50,9 @@ public class Reminder {
             result += " PM";
         }
         return result;
+    }
+
+    public String getInstructions(){
+        return instructions;
     }
 }

@@ -13,6 +13,7 @@ public class SmsConversation {
     String nextFunctionCall, userResponse, functionResponse;
     HashMap<String,Runnable> functions;
     HashMap<String, LinkedList<Reminder>> schedule;
+    Reminder reminder;
 
     public SmsConversation(){
         smsSender = new SmsSender();
@@ -25,6 +26,7 @@ public class SmsConversation {
         functions.put("processConsentToReminders", () -> processConsentToReminders());
         functions.put("queryReminderTime", () -> queryReminderTime());
         functions.put("remind", () -> remind());
+        functions.put("processRemindResponse", () -> processRemindResponse());
 
         schedule = new HashMap<>();
         mock();
@@ -53,7 +55,7 @@ public class SmsConversation {
         }
     }
     private void consentToReminders(){
-        functionResponse = "Would you like to use the SMS perscription reminder system? y/n";
+        functionResponse = "Would you like to use the SMS prescription reminder system? y/n";
         nextFunctionCall = "processConsentToReminders";
     }
 
@@ -77,12 +79,15 @@ public class SmsConversation {
             Date result = Chrono.ParseDate(userResponse);
 
             String remindTime = result.getHours() + ":" + result.getMinutes(); // for HashMap
-            Reminder reminder = new Reminder("3 LCDs", "Netflixium", result.getHours(), result.getMinutes());
+            String instructions = "\n•Ensure a safe distance from viewing monolith.\n•Fully widen space between eyelids to" +
+                    "ensure maximum photon transference.";
+            Reminder reminder = new Reminder("3 LCDs", "Netflixium", result.getHours(), result.getMinutes(),instructions);
             addToSchedule(remindTime, reminder);
 
             smsSender.sendMessage("Ok, I've set a reminder for " + reminder.getAmPmTime());
             remind();
         }
+
         else{
             functionResponse = "Medication Schedule:\n\n";
             for(int h = 0; h < 13; h++){
@@ -117,13 +122,22 @@ public class SmsConversation {
                 for(Reminder reminder : schedule.get(timeString)){
                     functionResponse += ("Medication reminder:\n\n" +
                             "Take " + reminder.dose + " of " + reminder.medicationName + "\n");
+                    this.reminder = reminder;
                 }
                 reminded = true;
             }
         }
-        functionResponse += "\nReply \"cancel\" to cancel this reminder or \"stop\" to " +
+        functionResponse += "\nReply \"instructions\" for medication instructions, \"cancel\" to cancel this reminder or \"stop\" to " +
                 "stop using Express Scripts' reminder service";
-        nextFunctionCall = "confirmDrugs";
+        nextFunctionCall = "processRemindResponse";
+    }
+
+    private void processRemindResponse(){
+        if(userResponse.equals("instructions")){
+            functionResponse = this.reminder.medicationName + " instructions: \n" + this.reminder.instructions;
+        }
+
+        nextFunctionCall = "remind";
     }
 
     public MessagingResponse handleRequest(String message){
@@ -170,9 +184,20 @@ public class SmsConversation {
     }
 
     private void mock(){
-        Reminder r1 = new Reminder("2 capsules","Amazonalto", 9, 45);
+        String instruction1 =
+                "Ensure delivery receptacle contains unalocated space.\nSelect a deliverable.\nWait for the specified " +
+                        "time.\nUpon delievery, open front domicile entry port to receive deliverable.";
+        Reminder r1 = new Reminder("2 capsules","Amazonalto", 9, 45,instruction1);
         addToSchedule("9:30",r1);
-        Reminder r2 = new Reminder("5 grams", "IBMTren", 12,30);
+        String instruction2 =
+                "Relocate to Rochester, MN, observe the remains of a large employee base, move on to Watson.";
+        Reminder r2 = new Reminder("5 grams", "IBMTren", 11,35,instruction2);
         addToSchedule("12:30",r2);
+        String instruction3 =
+                "Open sugar bag, insert spoon into bag.  Insert sugar into mouth.  Allow the medicine to go down in the " +
+                        "most delightful way";
+        Reminder r3 = new Reminder("1 spoonful", "Sugar", 11,35,instruction3);
+        addToSchedule("12:30",r3);
     }
+
 }
