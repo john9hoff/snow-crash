@@ -60,7 +60,8 @@ public class SmsConversation {
             nextFunctionCall = "queryReminderTime";
         }
         else{
-            functionResponse = "Ok.  If you have any questions, dial (555) 555-5551 to speak with a Pharmacist";
+            functionResponse = "Ok.  If you have any questions, dial (555) 555-5551 to speak with a Pharmacist" +
+            "\nTo request a prescription refill type \"Refill\"";
         }
     }
 
