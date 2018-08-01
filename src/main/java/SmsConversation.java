@@ -27,6 +27,7 @@ public class SmsConversation {
         functions.put("remind", () -> remind());
 
         schedule = new HashMap<>();
+        mock();
 
         smsSender.sendMessage("Hi " + username + "!");
         confirmDrugs();
@@ -54,32 +55,49 @@ public class SmsConversation {
 
     private void processConsentToReminders(){
         if(userResponse.equals("y")){
-            functionResponse = "Ok.  Please enter the time you would like to be reminded.  Examples: 9 AM, 8:45 PM";
+            functionResponse = "Ok.  Please enter the time you would like to be reminded.  Examples: 9 AM, 8:45 PM \n" +
+                    "Or type \"Schedule\" to see your current medication schedule";
             nextFunctionCall = "queryReminderTime";
         }
         else{
             functionResponse = "Ok.  If you have any questions, dial (555) 555-5551 to speak with a Pharmacist";
         }
     }
-    private void queryReminderTime(){
-        System.out.println("User Response: " + userResponse);
-        Date result = Chrono.ParseDate(userResponse);
-        System.out.println(result);
-        System.out.println(result.getHours() + " " + result.getMinutes());
 
-        String remindTime = result.getHours() + ":" + result.getMinutes(); // for HashMap
-        Reminder reminder = new Reminder("25 milliliters", "Netflixium", result.getHours(), result.getMinutes());
-        if(schedule.get(remindTime) == null){
-            LinkedList<Reminder> timeList = new LinkedList<>();
-            timeList.add(reminder);
-            schedule.put(remindTime,timeList);
+    private void queryReminderTime(){
+        if(!userResponse.toLowerCase().contains("schedule")) {
+            Date result = Chrono.ParseDate(userResponse);
+
+            String remindTime = result.getHours() + ":" + result.getMinutes(); // for HashMap
+            Reminder reminder = new Reminder("3 LCDs", "Netflixium", result.getHours(), result.getMinutes());
+            addToSchedule(remindTime, reminder);
+
+            smsSender.sendMessage("Ok, I've set a reminder for " + reminder.getAmPmTime());
+            remind();
         }
         else{
-            schedule.get(remindTime).add(reminder);
+            functionResponse = "Medication Schedule:\n\n";
+            for(int h = 0; h < 13; h++){
+                for(int m = 0; m < 60; m++){
+                    String hourString = String.valueOf(h);
+                    String minString;
+                    if(m < 10){
+                        minString = "0"+String.valueOf(m);
+                    }
+                    else{
+                        minString = String.valueOf(m);
+                    }
+                    String key = hourString + ":" + minString;
+                    if(schedule.get(key) != null){
+                        for(Reminder r : schedule.get(key)){
+                            functionResponse += "• " + r.dose + " of " + r.medicationName + " at " + r.getAmPmTime() + "\n";
+                        }
+                    }
+                }
+            }
+            functionResponse += "\n" + "Please enter the time you would like to be reminded.  Examples: 9 AM, 8:45 PM \n" +
+            "Or type \"Schedule\" to see your current medication schedule";
         }
-
-        smsSender.sendMessage("Ok, I've set a reminder for " + reminder.getAmPmTime());
-        remind();
     }
     private void remind(){
         functionResponse = "";
@@ -130,5 +148,23 @@ public class SmsConversation {
         parsed = parsed.replace("%2B","+");
         parsed = parsed.replace("%3A", ":");
         return parsed;
+    }
+
+    private void addToSchedule(String remindTime, Reminder reminder){
+        if(schedule.get(remindTime) == null){
+            LinkedList<Reminder> timeList = new LinkedList<>();
+            timeList.add(reminder);
+            schedule.put(remindTime,timeList);
+        }
+        else{
+            schedule.get(remindTime).add(reminder);
+        }
+    }
+
+    private void mock(){
+        Reminder r1 = new Reminder("2 capsules","Amazonalto", 9, 30);
+        addToSchedule("9:30",r1);
+        Reminder r2 = new Reminder("5 grams", "IBMTren", 12,30);
+        addToSchedule("12:30",r2);
     }
 }
