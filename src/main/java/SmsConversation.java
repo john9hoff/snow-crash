@@ -34,34 +34,41 @@ public class SmsConversation {
     }
 
     private void confirmDrugs(){
-        smsSender.sendMessage("Have you received your prescription?");
+        smsSender.sendMessage("Have you received your prescription? y/n.");
         nextFunctionCall = "processConfirmDrugResponse";
     }
 
     private void processConfirmDrugResponse(){
-        if(userResponse.equals("y")){
+        if(userResponse.toUpperCase().equals("Y")){
             smsSender.sendMessage("Excellent!");
             consentToReminders();
         }
-        else{
-            functionResponse = "Why not?";
+        else if (userResponse.toUpperCase().equals("N")){
+            functionResponse = "Yes you have!";
             nextFunctionCall = "confirmDrugs";
+        }
+        else{
+            functionResponse = "Please enter either y or n";
+            nextFunctionCall = "confirmDrugs;"
         }
     }
     private void consentToReminders(){
-        functionResponse = "Would you like to use the SMS perscription reminder system?";
+        functionResponse = "Would you like to use the SMS perscription reminder system? y/n";
         nextFunctionCall = "processConsentToReminders";
     }
 
     private void processConsentToReminders(){
-        if(userResponse.equals("y")){
+        if(userResponse.toUpperCase().equals("Y")){
             functionResponse = "Ok.  Please enter the time you would like to be reminded.  Examples: 9 AM, 8:45 PM \n" +
                     "Or type \"Schedule\" to see your current medication schedule";
             nextFunctionCall = "queryReminderTime";
         }
-        else{
+        else if userResponse.toUpperCase().equals("N"){
             functionResponse = "Ok.  If you have any questions, dial (555) 555-5551 to speak with a Pharmacist" +
             "\nTo request a prescription refill type \"Refill\"";
+        } else{
+            functionResponse = "Please enter y or n";
+            nextFunctionCall = "consentToReminders";
         }
     }
 
