@@ -72,27 +72,32 @@ public class SmsConversation {
         if(schedule.get(remindTime) == null){
             LinkedList<Reminder> timeList = new LinkedList<>();
             timeList.add(reminder);
+            schedule.put(remindTime,timeList);
         }
         else{
             schedule.get(remindTime).add(reminder);
         }
 
-        functionResponse = "Ok, I've set a reminder for " + reminder.getAmPmTime();
-        nextFunctionCall = "remind";
+        smsSender.sendMessage("Ok, I've set a reminder for " + reminder.getAmPmTime());
+        remind();
     }
     private void remind(){
+        functionResponse = "";
         boolean reminded = false;
         while(!reminded){
             Date time = new Date();
             String timeString = time.getHours() + ":" + time.getMinutes();
-            if(!schedule.get(timeString).isEmpty()){
+            if(schedule.get(timeString) != null){
                 for(Reminder reminder : schedule.get(timeString)){
-                    smsSender.sendMessage("Medication reminder:\n" +
-                            "take " + reminder.dose + " of " + reminder.medicationName);
+                    functionResponse += ("Medication reminder:\n\n" +
+                            "Take " + reminder.dose + " of " + reminder.medicationName + "\n");
                 }
                 reminded = true;
             }
         }
+        functionResponse += "\nReply \"cancel\" to cancel this reminder or \"stop\" to " +
+                "stop using Express Scripts' reminder service";
+        nextFunctionCall = "confirmDrugs";
     }
 
     public MessagingResponse handleRequest(String message){
