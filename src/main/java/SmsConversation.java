@@ -5,11 +5,13 @@ import com.wanasit.chrono.Chrono;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class SmsConversation {
     SmsSender smsSender;
     String nextFunctionCall, userResponse, functionResponse;
     HashMap<String,Runnable> functions;
+    HashMap<String, LinkedList<Reminder>> schedule;
 
     public SmsConversation(){
         smsSender = new SmsSender();
