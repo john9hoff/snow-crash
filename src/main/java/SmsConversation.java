@@ -24,7 +24,9 @@ public class SmsConversation {
         functions.put("consentToReminders", () -> consentToReminders());
         functions.put("processConsentToReminders", () -> processConsentToReminders());
         functions.put("queryReminderTime", () -> queryReminderTime());
-        functions.put("reminder", () -> remind());
+        functions.put("remind", () -> remind());
+
+        schedule = new HashMap<>();
 
         smsSender.sendMessage("Hi " + username + "!");
         confirmDrugs();
@@ -65,8 +67,33 @@ public class SmsConversation {
         System.out.println(result);
         System.out.println(result.getHours() + " " + result.getMinutes());
 
+        String remindTime = result.getHours() + ":" + result.getMinutes(); // for HashMap
+        Reminder reminder = new Reminder("25 milliliters", "Netflixium", result.getHours(), result.getMinutes());
+        if(schedule.get(remindTime) == null){
+            LinkedList<Reminder> timeList = new LinkedList<>();
+            timeList.add(reminder);
+        }
+        else{
+            schedule.get(remindTime).add(reminder);
+        }
+
+        functionResponse = "Ok, I've set a reminder for " + reminder.getAmPmTime();
+        nextFunctionCall = "remind";
     }
-    private void remind(){}
+    private void remind(){
+        boolean reminded = false;
+        while(!reminded){
+            Date time = new Date();
+            String timeString = time.getHours() + ":" + time.getMinutes();
+            if(!schedule.get(timeString).isEmpty()){
+                for(Reminder reminder : schedule.get(timeString)){
+                    smsSender.sendMessage("Medication reminder:\n" +
+                            "take " + reminder.dose + " of " + reminder.medicationName);
+                }
+                reminded = true;
+            }
+        }
+    }
 
     public MessagingResponse handleRequest(String message){
         String parsed = parseSMS(message);
